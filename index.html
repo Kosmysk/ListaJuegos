@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎮 Mi Biblioteca de Juegos</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -431,8 +432,9 @@
 
   <div class="controls">
     <button class="btn" onclick="abrirModal()">➕ Agregar Juego</button>
-    <button class="btn" onclick="exportarDatos()">💾 Exportar Datos</button>
-    <button class="btn" onclick="importarDatos()">📥 Importar Datos</button>
+    <button class="btn" onclick="importarExcel()">📊 Importar Excel</button>
+    <button class="btn" onclick="exportarDatos()">💾 Exportar JSON</button>
+    <button class="btn" onclick="importarDatos()">📥 Importar JSON</button>
     <button class="btn" onclick="resetearDatos()">🔄 Resetear Todo</button>
   </div>
 
@@ -733,6 +735,82 @@ function importarDatos() {
       }
     };
     reader.readAsText(file);
+  };
+  input.click();
+}
+
+function importarExcel() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.xlsx,.xls';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        // Leer todas las hojas
+        let todosLosJuegos = [];
+        
+        workbook.SheetNames.forEach(sheetName => {
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          
+          jsonData.forEach(row => {
+            // Normalizar los nombres de las columnas
+            const titulo = row['Título del juego'] || row['Titulo del juego'] || row['titulo'] || '';
+            const estado = row['Estado'] || row['estado'] || 'Sin comenzar';
+            const nota = row['Nota del juego'] || row['nota'] || null;
+            const año = row['Año jugado'] || row['año'] || row['Ano jugado'] || null;
+            
+            if (titulo && titulo.trim()) {
+              todosLosJuegos.push({
+                nombre: titulo.trim(),
+                estado: estado.trim(),
+                nota: nota ? parseInt(nota) : null,
+                año: año ? parseInt(año) : null
+              });
+            }
+          });
+        });
+        
+        if (todosLosJuegos.length > 0) {
+          const confirmacion = confirm(
+            `Se encontraron ${todosLosJuegos.length} juegos en el archivo.\n\n` +
+            `¿Deseas REEMPLAZAR todos tus juegos actuales (${juegos.length}) o AGREGAR estos juegos a tu biblioteca?\n\n` +
+            `OK = Reemplazar todo\nCancelar = Agregar a los existentes`
+          );
+          
+          if (confirmacion) {
+            juegos = todosLosJuegos;
+          } else {
+            // Agregar solo los que no existen
+            todosLosJuegos.forEach(nuevoJuego => {
+              const existe = juegos.some(j => 
+                j.nombre.toLowerCase() === nuevoJuego.nombre.toLowerCase()
+              );
+              if (!existe) {
+                juegos.push(nuevoJuego);
+              }
+            });
+          }
+          
+          guardarEnStorage();
+          renderizarTabla();
+          actualizarEstadisticas();
+          llenarFiltroAños();
+          alert(`✅ Se importaron correctamente ${todosLosJuegos.length} juegos desde Excel`);
+        } else {
+          alert('No se encontraron datos válidos en el archivo Excel');
+        }
+      } catch (error) {
+        console.error('Error al importar Excel:', error);
+        alert('Error al importar el archivo Excel. Asegúrate de que tenga las columnas correctas.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
   };
   input.click();
 }
