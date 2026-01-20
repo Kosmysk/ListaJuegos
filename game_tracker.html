@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 Mi Biblioteca de Juegos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(180deg, #1a1a2e, #16213e);
+      min-height: 100vh;
+      padding: 20px;
+      color: #e4e4e4;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeInDown 0.6s ease;
+    }
+
+    h1 {
+      color: #00d4ff;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    }
+
+    .subtitle {
+      color: #a0a0a0;
+      font-size: 1rem;
+    }
+
+    .stats {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 15px 25px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: #00d4ff;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00d4ff;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #a0a0a0;
+      margin-top: 3px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      background: rgba(0, 212, 255, 0.1);
+      color: #00d4ff;
+      border: 1px solid #00d4ff;
+      padding: 10px 25px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: rgba(0, 212, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+    }
+
+    .search-filter {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e4e4e4;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+
+    select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e4e4e4;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+
+    .table-container {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 15px;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: rgba(0, 212, 255, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th {
+      padding: 15px 12px;
+      text-align: left;
+      color: #00d4ff;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    th:hover {
+      background: rgba(0, 212, 255, 0.15);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr {
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .badge-completado {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+      border: 1px solid #4caf50;
+    }
+
+    .badge-jugado {
+      background: rgba(33, 150, 243, 0.2);
+      color: #2196f3;
+      border: 1px solid #2196f3;
+    }
+
+    .badge-jugando {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+
+    .badge-abandonado {
+      background: rgba(244, 67, 54, 0.2);
+      color: #f44336;
+      border: 1px solid #f44336;
+    }
+
+    .badge-sin-comenzar {
+      background: rgba(158, 158, 158, 0.2);
+      color: #9e9e9e;
+      border: 1px solid #9e9e9e;
+    }
+
+    .badge-por-comprar {
+      background: rgba(156, 39, 176, 0.2);
+      color: #9c27b0;
+      border: 1px solid #9c27b0;
+    }
+
+    .badge-gamepass {
+      background: rgba(0, 212, 255, 0.2);
+      color: #00d4ff;
+      border: 1px solid #00d4ff;
+    }
+
+    .rating {
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    .year {
+      color: #a0a0a0;
+      font-size: 0.85rem;
+    }
+
+    .edit-btn {
+      background: transparent;
+      border: none;
+      color: #00d4ff;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 5px;
+      transition: transform 0.2s ease;
+    }
+
+    .edit-btn:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      table {
+        font-size: 0.8rem;
+      }
+
+      th, td {
+        padding: 8px 6px;
+      }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1a1a2e;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 10px 50px rgba(0, 212, 255, 0.3);
+    }
+
+    .modal-header {
+      color: #00d4ff;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #a0a0a0;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e4e4e4;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #00d4ff;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: #00d4ff;
+      color: #1a1a2e;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+      background: #00b8e6;
+      transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+      flex: 1;
+      background: transparent;
+      color: #f44336;
+      border: 1px solid #f44336;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(244, 67, 54, 0.1);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🎮 Mi Biblioteca de Juegos</h1>
+    <p class="subtitle">Organiza, califica y lleva el registro de tu aventura gaming</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="totalJuegos">0</div>
+      <div class="stat-label">Total Juegos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="completados">0</div>
+      <div class="stat-label">Completados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="jugando">0</div>
+      <div class="stat-label">Jugando</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="promedioNota">0.0</div>
+      <div class="stat-label">Nota Promedio</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="abrirModal()">➕ Agregar Juego</button>
+    <button class="btn" onclick="exportarDatos()">💾 Exportar Datos</button>
+    <button class="btn" onclick="importarDatos()">📥 Importar Datos</button>
+    <button class="btn" onclick="resetearDatos()">🔄 Resetear Todo</button>
+  </div>
+
+  <div class="search-filter">
+    <div class="filter-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar juego..." onkeyup="filtrarJuegos()">
+      <select id="filterEstado" onchange="filtrarJuegos()">
+        <option value="">Todos los estados</option>
+        <option value="Completado">Completado</option>
+        <option value="Jugado">Jugado</option>
+        <option value="Jugando">Jugando</option>
+        <option value="Sin comenzar">Sin comenzar</option>
+        <option value="Abandonado">Abandonado</option>
+        <option value="Por comprar">Por comprar</option>
+        <option value="Xbox Game Pass">Xbox Game Pass</option>
+      </select>
+      <select id="filterAño" onchange="filtrarJuegos()">
+        <option value="">Todos los años</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table id="gameTable">
+      <thead>
+        <tr>
+          <th onclick="ordenarTabla('nombre')">Título 🔽</th>
+          <th onclick="ordenarTabla('estado')">Estado 🔽</th>
+          <th onclick="ordenarTabla('nota')">Nota 🔽</th>
+          <th onclick="ordenarTabla('año')">Año 🔽</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="gameTableBody">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal" id="gameModal">
+  <div class="modal-content">
+    <h2 class="modal-header" id="modalTitle">Agregar Juego</h2>
+    <div class="form-group">
+      <label>Título del juego</label>
+      <input type="text" id="inputNombre" placeholder="Ej: The Last of Us">
+    </div>
+    <div class="form-group">
+      <label>Estado</label>
+      <select id="inputEstado">
+        <option value="Sin comenzar">Sin comenzar</option>
+        <option value="Jugando">Jugando</option>
+        <option value="Jugado">Jugado</option>
+        <option value="Completado">Completado</option>
+        <option value="Abandonado">Abandonado</option>
+        <option value="Por comprar">Por comprar</option>
+        <option value="Xbox Game Pass">Xbox Game Pass</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nota (1-10)</label>
+      <input type="number" id="inputNota" min="1" max="10" placeholder="Opcional">
+    </div>
+    <div class="form-group">
+      <label>Año jugado</label>
+      <input type="number" id="inputAño" min="2000" max="2030" placeholder="Ej: 2025">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="guardarJuego()">💾 Guardar</button>
+      <button class="btn-cancel" onclick="cerrarModal()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let juegos = [];
+let editandoIndex = -1;
+let ordenActual = { columna: '', direccion: 'asc' };
+
+// Cargar datos iniciales o desde localStorage
+function inicializar() {
+  const datosGuardados = localStorage.getItem('juegos_biblioteca');
+  if (datosGuardados) {
+    try {
+      juegos = JSON.parse(datosGuardados);
+    } catch (e) {
+      console.error('Error al cargar datos:', e);
+      juegos = [];
+    }
+  }
+  renderizarTabla();
+  actualizarEstadisticas();
+  llenarFiltroAños();
+}
+
+function guardarEnStorage() {
+  localStorage.setItem('juegos_biblioteca', JSON.stringify(juegos));
+}
+
+function abrirModal(index = -1) {
+  editandoIndex = index;
+  const modal = document.getElementById('gameModal');
+  
+  if (index >= 0) {
+    document.getElementById('modalTitle').textContent = 'Editar Juego';
+    const juego = juegos[index];
+    document.getElementById('inputNombre').value = juego.nombre;
+    document.getElementById('inputEstado').value = juego.estado;
+    document.getElementById('inputNota').value = juego.nota || '';
+    document.getElementById('inputAño').value = juego.año || '';
+  } else {
+    document.getElementById('modalTitle').textContent = 'Agregar Juego';
+    document.getElementById('inputNombre').value = '';
+    document.getElementById('inputEstado').value = 'Sin comenzar';
+    document.getElementById('inputNota').value = '';
+    document.getElementById('inputAño').value = new Date().getFullYear();
+  }
+  
+  modal.classList.add('active');
+}
+
+function cerrarModal() {
+  document.getElementById('gameModal').classList.remove('active');
+  editandoIndex = -1;
+}
+
+function guardarJuego() {
+  const nombre = document.getElementById('inputNombre').value.trim();
+  const estado = document.getElementById('inputEstado').value;
+  const nota = document.getElementById('inputNota').value;
+  const año = document.getElementById('inputAño').value;
+  
+  if (!nombre) {
+    alert('Por favor ingresa el nombre del juego');
+    return;
+  }
+  
+  const juego = {
+    nombre,
+    estado,
+    nota: nota ? parseInt(nota) : null,
+    año: año ? parseInt(año) : null
+  };
+  
+  if (editandoIndex >= 0) {
+    juegos[editandoIndex] = juego;
+  } else {
+    juegos.push(juego);
+  }
+  
+  guardarEnStorage();
+  cerrarModal();
+  renderizarTabla();
+  actualizarEstadisticas();
+  llenarFiltroAños();
+}
+
+function eliminarJuego(index) {
+  if (confirm('¿Estás seguro de eliminar este juego?')) {
+    juegos.splice(index, 1);
+    guardarEnStorage();
+    renderizarTabla();
+    actualizarEstadisticas();
+  }
+}
+
+function obtenerClaseBadge(estado) {
+  const clases = {
+    'Completado': 'badge-completado',
+    'Jugado': 'badge-jugado',
+    'Jugando': 'badge-jugando',
+    'Abandonado': 'badge-abandonado',
+    'Sin comenzar': 'badge-sin-comenzar',
+    'Por comprar': 'badge-por-comprar',
+    'Xbox Game Pass': 'badge-gamepass'
+  };
+  return clases[estado] || 'badge-sin-comenzar';
+}
+
+function renderizarTabla() {
+  const tbody = document.getElementById('gameTableBody');
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  const filterEstado = document.getElementById('filterEstado').value;
+  const filterAño = document.getElementById('filterAño').value;
+  
+  let juegosFiltrados = juegos.filter(juego => {
+    const matchSearch = juego.nombre.toLowerCase().includes(searchTerm);
+    const matchEstado = !filterEstado || juego.estado === filterEstado;
+    const matchAño = !filterAño || (juego.año && juego.año.toString() === filterAño);
+    return matchSearch && matchEstado && matchAño;
+  });
+  
+  tbody.innerHTML = juegosFiltrados.map((juego, index) => {
+    const indexOriginal = juegos.indexOf(juego);
+    return `
+      <tr>
+        <td><strong>${juego.nombre}</strong></td>
+        <td><span class="badge ${obtenerClaseBadge(juego.estado)}">${juego.estado}</span></td>
+        <td><span class="rating">${juego.nota ? '⭐ ' + juego.nota : '-'}</span></td>
+        <td><span class="year">${juego.año || '-'}</span></td>
+        <td>
+          <button class="edit-btn" onclick="abrirModal(${indexOriginal})" title="Editar">✏️</button>
+          <button class="edit-btn" onclick="eliminarJuego(${indexOriginal})" title="Eliminar">🗑️</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function actualizarEstadisticas() {
+  document.getElementById('totalJuegos').textContent = juegos.length;
+  
+  const completados = juegos.filter(j => j.estado === 'Completado').length;
+  document.getElementById('completados').textContent = completados;
+  
+  const jugando = juegos.filter(j => j.estado === 'Jugando').length;
+  document.getElementById('jugando').textContent = jugando;
+  
+  const juegosConNota = juegos.filter(j => j.nota);
+  const promedio = juegosConNota.length > 0
+    ? (juegosConNota.reduce((sum, j) => sum + j.nota, 0) / juegosConNota.length).toFixed(1)
+    : '0.0';
+  document.getElementById('promedioNota').textContent = promedio;
+}
+
+function llenarFiltroAños() {
+  const años = [...new Set(juegos.map(j => j.año).filter(a => a))].sort((a, b) => b - a);
+  const select = document.getElementById('filterAño');
+  const valorActual = select.value;
+  
+  select.innerHTML = '<option value="">Todos los años</option>';
+  años.forEach(año => {
+    select.innerHTML += `<option value="${año}">${año}</option>`;
+  });
+  
+  select.value = valorActual;
+}
+
+function filtrarJuegos() {
+  renderizarTabla();
+}
+
+function ordenarTabla(columna) {
+  if (ordenActual.columna === columna) {
+    ordenActual.direccion = ordenActual.direccion === 'asc' ? 'desc' : 'asc';
+  } else {
+    ordenActual.columna = columna;
+    ordenActual.direccion = 'asc';
+  }
+  
+  juegos.sort((a, b) => {
+    let valA = a[columna];
+    let valB = b[columna];
+    
+    if (valA === null || valA === undefined) valA = '';
+    if (valB === null || valB === undefined) valB = '';
+    
+    if (typeof valA === 'string') valA = valA.toLowerCase();
+    if (typeof valB === 'string') valB = valB.toLowerCase();
+    
+    if (valA < valB) return ordenActual.direccion === 'asc' ? -1 : 1;
+    if (valA > valB) return ordenActual.direccion === 'asc' ? 1 : -1;
+    return 0;
+  });
+  
+  renderizarTabla();
+}
+
+function exportarDatos() {
+  const dataStr = JSON.stringify(juegos, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'biblioteca_juegos.json';
+  link.click();
+}
+
+function importarDatos() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const importados = JSON.parse(event.target.result);
+        if (Array.isArray(importados)) {
+          juegos = importados;
+          guardarEnStorage();
+          renderizarTabla();
+          actualizarEstadisticas();
+          llenarFiltroAños();
+          alert('Datos importados correctamente');
+        }
+      } catch (e) {
+        alert('Error al importar el archivo');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function resetearDatos() {
+  if (confirm('¿Estás seguro de que quieres eliminar TODOS los juegos?')) {
+    juegos = [];
+    guardarEnStorage();
+    renderizarTabla();
+    actualizarEstadisticas();
+    llenarFiltroAños();
+  }
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('gameModal').addEventListener('click', (e) => {
+  if (e.target.id === 'gameModal') {
+    cerrarModal();
+  }
+});
+
+inicializar();
+</script>
+
+</body>
+</html>
